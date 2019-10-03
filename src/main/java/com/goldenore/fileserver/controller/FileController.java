@@ -5,6 +5,7 @@ import com.goldenore.fileserver.pojo.FileAddress;
 import com.goldenore.fileserver.service.StorageFileNotFoundException;
 import com.goldenore.fileserver.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -55,19 +56,19 @@ public class FileController {
 
     @GetMapping("/download")
     @ResponseBody
-    public ResponseEntity<FileInputStream> serveUserFiles(@RequestParam(value = "filename") String filename, Principal principal) throws IOException {
+    public ResponseEntity<Object> serveUserFiles(@RequestParam(value = "filename") String filename, Principal principal) throws IOException {
 
-//        String requestURL = request.getRequestURL().toString();
-//
-//        String moduleName = requestURL.split("/download/")[1];
-
-        System.out.println(filename);
         Path filePath = storageService.load(filename, principal.getName());
-        FileInputStream fileBody = new FileInputStream(new File(filePath.toUri()));
+        File fileToDownload = new File(filePath.toString());
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(fileToDownload));
 
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+        return ResponseEntity
+                .ok()
+                .contentLength(fileToDownload.length())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
 
-                "attachment; filename=\"" + filePath.getFileName() + "\"").body(fileBody);
+                        "attachment; filename=\"" + filePath.getFileName() + "\"")
+                .body(resource);
 
     }
 
