@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.security.Principal;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/files")
+@RequestMapping("/users/{username}")
 public class FileController {
 
 
@@ -35,18 +36,23 @@ public class FileController {
         this.storageService = storageService;
     }
 
-    @GetMapping("/users/{username}")
-    public String listUploadedUserFiles(@PathVariable String username, Model model, Principal principal) throws IOException {
+    @GetMapping("")
+    public String listUploadedUserFiles(@PathVariable String username, Model model, Principal principal, HttpServletRequest request) throws IOException {
 
 
+        System.out.println(request.getRequestURL().toString());
         model.addAttribute("files",
                 storageService
                         .loadAll(username)
                         .map(temp -> {
                             FileAddress fileAddress = new FileAddress();
-                            fileAddress.setPhysicalAdress(temp.getFileName().toString());
-                            fileAddress.setURIAdress(MvcUriComponentsBuilder.fromMethodName(FileController.class,
-                                    "serveUserFiles", temp.getFileName().toString(), principal).build().toString());
+                            fileAddress.setPhysicalAdress(temp.toString());
+                            fileAddress.setURIAdress(MvcUriComponentsBuilder
+//                                    .relativeTo()
+                                    .fromMethodName(FileController.class, "serveUserFiles", temp.toString(), principal)
+                                    .buildAndExpand(principal.getName())
+                                    .toString());
+
                             return fileAddress;
                         })
                         .collect(Collectors.toList()));
@@ -80,7 +86,7 @@ public class FileController {
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-        return "redirect:/files/users/" + userName;
+        return "redirect:/users/" + userName;
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

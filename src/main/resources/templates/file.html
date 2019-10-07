@@ -1,12 +1,18 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<html xmlns:th="https://www.thymeleaf.org"
+>>
 <body>
 
 <!--<div th:if="${message}">-->
 <!--    <h2 th:text="${message}"/>-->
 <!--</div>-->
 
+
+<div th:text="${#authentication.name}"/>
+
+
 <div>
-    <form action="/files/upload " enctype="multipart/form-data" method="POST">
+    <form enctype="multipart/form-data" method="POST"
+          th:action="@{/users/{username}/upload(username=${#authentication.name})}">
         <table>
             <tr>
                 <td>File to upload:</td>

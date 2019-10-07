@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Value("${file.path}")
     private String filesPath;
+
 
 
     @Override
@@ -35,8 +37,11 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public Stream<Path> loadAll(String path) throws IOException {
 
-        Path start = Paths.get(filesPath + "/" + path);
-        Stream<Path> stream = Files.walk(start, Integer.MAX_VALUE);
+        Path start = Paths.get(filesPath + File.separator + path);
+        Stream<Path> stream = Files.walk(start, Integer.MAX_VALUE)
+                .filter(Files::isReadable)
+                .filter(Files::isRegularFile)
+                .map(temp -> start.relativize(temp));
 
         return stream;
     }

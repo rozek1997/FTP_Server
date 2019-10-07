@@ -46,7 +46,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         User user = (User) authentication.getPrincipal();
         user.getUsername();
 
-        return "/files/users/" + user.getUsername();
+        return "/users/" + user.getUsername();
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request) {

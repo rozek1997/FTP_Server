@@ -49,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/login*").permitAll()
+                .antMatchers("/users/{username}/**").access("@userSecurity.hasUserID(authentication, #username)")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
