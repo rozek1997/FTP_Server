@@ -1,5 +1,5 @@
 <html xmlns:th="https://www.thymeleaf.org"
->>
+>
 <body>
 
 <!--<div th:if="${message}">-->
@@ -11,8 +11,8 @@
 
 
 <div>
-    <form enctype="multipart/form-data" method="POST"
-          th:action="@{/users/{username}/upload(username=${#authentication.name})}">
+    <form enctype="multipart/form-data"
+          method="POST" th:action="@{/drive/upload(current_folder=${current_address.getRelativeAdress()})}">
         <table>
             <tr>
                 <td>File to upload:</td>
@@ -28,10 +28,27 @@
     </form>
 </div>
 
+<div id="menu">
+    <form method="post" th:action="@{/drive/create_folder(path=${current_address.getRelativeAdress()})}">
+        <input name="folder_name" placeholder="Folder name" type="text"/>
+        <input type="submit">Create</input>
+    </form>
+</div>
+
+<div id="navigation" th:if="${root_address} != null">
+
+    <ul>
+        <li>
+            <a th:href="${root_address.getURIAdress()}">..</a>
+        </li>
+    </ul>
+
+</div>
+
 <div th:if="${files!=null}">
     <ul>
         <li th:each="file : ${files}">
-            <a th:href="${file.getURIAdress()}" th:text="${file.getPhysicalAdress()}"></a>
+            <a th:href="${file.getURIAdress()}" th:text="${file.getFileName()}"></a>
         </li>
     </ul>
 </div>

@@ -12,7 +12,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class FileAddress {
 
-    private String physicalAdress;
+
+    private String fileName;
+
+    private String relativeAdress;
 
     private String URIAdress;
+
+    private boolean isDirectory;
+
+    private boolean isReadable;
+
 }
