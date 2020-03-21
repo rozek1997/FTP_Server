@@ -49,10 +49,11 @@ public class FileController {
     }
 
     @GetMapping("/folders")
-    public String listFolder(@RequestParam("directory_path") String directoryPath, Model model, Principal principal) throws IOException {
+    public String listFolder(@RequestParam(value = "directory_path", required = false,defaultValue = "") String directoryPath, Model model, Principal principal) throws IOException {
 
 
-        if (directoryPath == "")
+
+        if (directoryPath.equals(""))
             return "redirect:/drive/my_drive";
 
         model.addAttribute("files", buildURI(principal, model, storageService.loadAll(directoryPath, principal.getName())));
